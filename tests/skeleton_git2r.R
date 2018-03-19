@@ -35,8 +35,13 @@ testSkeletonGit2r <- function() {
   git2r::branch_create(comm,"gh-pages")
 
   # finally add the package
-  drat::insertPackage(file = file.path(wd, "foo_1.0.tar.gz"), repodir = rdir, commit = "test")
+  drat::insertPackage(file = file.path(wd, "foo_1.0.tar.gz"), repodir = rdir, commit = "test add")
   list(git2r::status(repo), dir(rdir, recursive = TRUE))
+
+  drat:::removePackage(file = file.path(rdir, "src", "contrib", "foo_1.0.tar.gz"), commit = "test remove")
+  list(git2r::status(repo), dir(rdir, recursive = TRUE))
+  
+  setwd(cwd)
 }
 
 testSkeletonGit2r()

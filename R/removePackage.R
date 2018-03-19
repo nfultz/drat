@@ -61,7 +61,8 @@ removePackage <- function(file,
   }
   
   pkgtype <- identifyPackageType(file)
-  
+  file.remove(file)
+  write_PACKAGES(pkgdir, type=pkgtype, ...)  
 
   ## update index
   
@@ -69,20 +70,17 @@ removePackage <- function(file,
     if (haspkg) {
       repo <- git2r::repository(pkgdir, discover=TRUE)
       setwd(pkgdir)
-      git2r::rm_file(repo, sub(workdir(repo), "", file))
-      write_PACKAGES(pkgdir, type=pkgtype, ...)
+      git2r::add(repo, sub(git2r::workdir(repo), "", file))
       git2r::add(repo, "PACKAGES")
       git2r::add(repo, "PACKAGES.gz")
       git2r::add(repo, "PACKAGES.rds")
       tryCatch({
         git2r::commit(repo, msg)
         #TODO: authentication woes?   git2r::push(repo)
-        message("Added and committed ", pkg, " plus PACKAGES files. Still need to push.\n")
+        message("Removed and committed ", pkg, " plus PACKAGES files. Still need to push.\n")
         }, error = function(e) warning(e))
     } else if (hascmd) {
       setwd(pkgdir)
-      file.remove(file)
-      write_PACKAGES(pkgdir, type=pkgtype, ...)
       pkgfs <- "PACKAGES PACKAGES.gz PACKAGES.rds"
       cmd <- sprintf(paste("git add %s;",
                            "git add %s;",
@@ -94,10 +92,7 @@ removePackage <- function(file,
       warning("Commit skipped as both git2r package and git command missing.",
               call.=FALSE)
     }
-  } else {
-    file.remove(file)
-    write_PACKAGES(pkgdir, type=pkgtype, ...)
-  }
+  } 
   
   invisible(NULL)
 }

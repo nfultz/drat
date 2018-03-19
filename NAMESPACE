@@ -3,5 +3,6 @@ importFrom(utils, "untar", "unzip")
 export(addRepo,
        initRepo,
        insertPackage,
+       removePackage,
        pruneRepo,
        archivePackages)
